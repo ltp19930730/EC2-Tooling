@@ -16,9 +16,9 @@ Find out the image id of this specific instance --> create number of instance ac
 `rsync` also copies files locally or over a network. But it employs a special delta transfer algorithm and a few optimizations to make the operation a lot faster. Consider the call.
 
 `rsync A host:B`
-rsync will check files sizes and modification timestamps of both A and B, and skip any further processing if they match.
-If the destination file B already exists, the delta transfer algorithm will make sure only differences between A and B are sent over the wire.
-rsync will write data to a temporary file T, and then replace the destination file B with T to make the update look "atomic" to processes that might be using B.
+* rsync will check files sizes and modification timestamps of both A and B, and skip any further processing if they match.
+* If the destination file B already exists, the delta transfer algorithm will make sure only differences between A and B are sent over the wire.
+* rsync will write data to a temporary file T, and then replace the destination file B with T to make the update look "atomic" to processes that might be using B.
 Anther difference between them concerns invocation. rsync has a plethora of command line options, allowing the user to fine tune its behavior. It supports complex filter rules, runs in batch mode, daemon mode, etc. scp has only a few switches.
 
 In summary, use scp for your day to day tasks. Commands that you type once in a while on your interactive shell. Its simpler to use, and in those cases rsync optimizations won't help much.
