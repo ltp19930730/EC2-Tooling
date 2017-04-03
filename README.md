@@ -23,6 +23,6 @@ Anther difference between them concerns invocation. rsync has a plethora of comm
 
 In summary, use scp for your day to day tasks. Commands that you type once in a while on your interactive shell. Its simpler to use, and in those cases rsync optimizations won't help much.
 
-For recurring tasks, like cron jobs, use rsync. As mentioned, on multiple invocations it will take advantage of data already transferred, performing very quickly and saving on resources. It is an excellent tool to keep two directories synchronized over a network.
+For recurring tasks, like `cron` jobs, use rsync. As mentioned, on multiple invocations it will take advantage of data already transferred, performing very quickly and saving on resources. It is an excellent tool to keep two directories synchronized over a network.
 
 Also, when dealing with large files, use rsync with the -P option. If the transfer is interrupted, you can resume it where it stopped by reissuing the command.
