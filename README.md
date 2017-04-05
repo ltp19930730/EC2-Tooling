@@ -10,6 +10,12 @@ The tool you write will be executed (and graded) on an Ubuntu instance ami-6de0d
 ## Basic idea:
 ### v1.0
 Find out the image id of this specific instance --> create number of instance according to the argv -n (default 10)-->find out all instances IP/domain_name -->send to the first instance using `rsync(1)` -->  ssh to the first instance -> compress the target directory using `tar(1)`(default /data) -->using a for loop to copy the file to the target intance with `rsync(1)` --> done!!!
+## UNIX utility
+tar -cf - -C srcdir . | tar -xpf - -C destdir
+
+Trick:
+
+ssh hostA "tar -czf - dir" | ssh hostB "tar -xzf -"
 
 ### `scp` vs `rsync`
 ` scp ` basically reads the source file and writes it to the destination. It performs a plain linear copy, locally, or over a network.
