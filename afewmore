@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#########################
+#
+# the source code for afewmore
+#
+#########################
+
+# default value
+SOURCE_DIR='/data/'
+NUM_CP=10
+VERBOSE=false    
+
+# function of usage
+usage(){
+    echo "Usage: afewmore [-hv] [-d dir] [-t dir] [-n num] instance-id"
+}
+
+# if using the option -v print the message
+msg(){
+    if $VERBOSE;then
+         echo $@
+    fi 
+}
+
+fatal(){
+    echo $@ >&2
+    usage 
+    exit 1
+}
+
+# function display option to use
+help(){
+echo "     -d dir   Copy the contents of this data directory from the orignal source
+	      instance to all the new instances.  If not specified, defaults
+	      to /data.
+     -t  dir  specify the target dir
+
+     -h       Print a usage statement and exit.
+
+     -n num   Create this many new instances.  If not specified, defaults to
+	      10.
+
+     -v       Be verbose."
+}
+
+# function to check the instance is valid or not
+check_instance(){
+
+    local re='^i-[0-9a-f]{17}$'
+    if ! [[ $INSTANCE_ID =~ $re ]];then
+        fatal "Invalid format of instance ID"
+    fi
+
+    local checkinfo=$(aws ec2 describe-instances --query Reservations[].Instances[].InstanceId[] --output text | grep "$INSTANCE_ID")
+   # echo $checkinfo
+    if [[ $checkinfo == '' ]];then
+        fatal "instance is not exist"
+    fi
+}
+
+
+
+
+
+#fetch information using the instance id
+
+fetch_info(){
+    msg "fetching information...."
+    local fetch=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output text --query 'Reservations[].Instances[].{Image_Id:ImageId, Key_Name:KeyName,Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
+    read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME GROUP_ID <<< $(echo $fetch)
+    GROUP_ID=$(echo $GROUP_ID | awk '{print $2}')
+    msg "Source instance info:"
+    msg "Image_Id: $IMAGE_D Key_Name: $KEY_NAME"
+    msg "Instance_Type: $INSTANCE_TYPE AvailabilityZone: $AVA_ZONE SecurityGropus: $GROUP_ID"
+
+}
+
+
+
+
+# main 
+while true; do
+	case $1 in
+	    -h) help; exit 0 ;; 
+	    -v) VERBOSE=true; shift ;;
+        -d) shift; SOURCE_DIR=$1 ; shift ;;
+        -t) shift; TARGET_DIR=$1 ; shift ;;
+        -n) shift; NUM_CP=$1 ; shift ;;
+        -*) fatal "Invalid arguments : $1" ;;
+        *) 
+            if [[ $# -lt 1 ]]; then
+                fatal "Please specify the instance id"
+            else
+                INSTANCE_ID=$1
+                check_instance
+                fetch_info
+                exit 0       
+            fi ;;
+    esac
+done
