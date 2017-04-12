@@ -8,6 +8,7 @@
 # default value
 SOURCE_DIR='/data/'
 NUM_CP=10
+DONE_CP=0
 VERBOSE=false    
 
 # function of usage
@@ -58,8 +59,13 @@ check_instance(){
     fi
 }
 
-
-
+# function to check the number is valid
+check_num(){
+    local re='^[1-9][0-9]+$'
+    if ! [[ $NUM_CP =~ $re ]] ; then
+        fatal "Error not a valid number"
+    fi
+}
 
 
 #fetch information using the instance id
@@ -70,13 +76,27 @@ fetch_info(){
     read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME GROUP_ID <<< $(echo $fetch)
     GROUP_ID=$(echo $GROUP_ID | awk '{print $2}')
     msg "Source instance info:"
-    msg "Image_Id: $IMAGE_D Key_Name: $KEY_NAME"
+    msg "Image_Id: $IMAGE_ID Key_Name: $KEY_NAME"
     msg "Instance_Type: $INSTANCE_TYPE AvailabilityZone: $AVA_ZONE SecurityGropus: $GROUP_ID"
 
 }
 
+# create instance
 
+start_copy(){
+    msg "create instance...."
+    local start_instance=$(aws ec2 run-instances --count 2 --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output text > test.txt)
+    echo $start_instance   
 
+}
+
+# check staus 
+
+check_status(){
+    msg "checking status of instance: $@..."
+    local res=$(aws ec2 describe-instance-status --instance-ids $@ --output text | awk ' $3~/passed/ {print}'| wc -l)
+    msg "check: $res/2"
+}
 
 # main 
 while true; do
@@ -85,7 +105,7 @@ while true; do
 	    -v) VERBOSE=true; shift ;;
         -d) shift; SOURCE_DIR=$1 ; shift ;;
         -t) shift; TARGET_DIR=$1 ; shift ;;
-        -n) shift; NUM_CP=$1 ; shift ;;
+        -n) shift; NUM_CP=$1 ;check_num ; shift ;;
         -*) fatal "Invalid arguments : $1" ;;
         *) 
             if [[ $# -lt 1 ]]; then
@@ -94,6 +114,8 @@ while true; do
                 INSTANCE_ID=$1
                 check_instance
                 fetch_info
+                start_copy
+                check_status $INSTANCE_ID
                 exit 0       
             fi ;;
     esac

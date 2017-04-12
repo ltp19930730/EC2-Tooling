@@ -1,0 +1,21 @@
+379645546579	r-0cdb4dba55c8dc977
+INSTANCES	1	i386	None	False	xen	ami-6de0dd04	i-0e9d9797bcc57db5e	t1.micro	aki-b6aa75df	test_key	2017-04-12T00:09:46.000Z	ip-172-31-14-14.ec2.internal	172.31.14.14	None	/dev/sda1	ebs	True	None	subnet-1761da5e	paravirtual	vpc-7e474019
+MONITORING	disabled
+NETWORKINTERFACES	None	eni-75925e90	379645546579	ip-172-31-14-14.ec2.internal	172.31.14.14	True	in-use	subnet-1761da5e	vpc-7e474019
+ATTACHMENT	2017-04-12T00:09:46.000Z	eni-attach-035aed38	True	0	attaching
+GROUPS	sg-65a9aa1f	default
+PRIVATEIPADDRESSES	True	ip-172-31-14-14.ec2.internal	172.31.14.14
+PLACEMENT	us-east-1a	None	default
+SECURITYGROUPS	sg-65a9aa1f	default
+STATE	0	pending
+STATEREASON	pending	pending
+INSTANCES	0	i386	None	False	xen	ami-6de0dd04	i-0d99db31a6907a87b	t1.micro	aki-b6aa75df	test_key	2017-04-12T00:09:46.000Z	ip-172-31-14-4.ec2.internal	172.31.14.4	None	/dev/sda1	ebs	True	None	subnet-1761da5e	paravirtual	vpc-7e474019
+MONITORING	disabled
+NETWORKINTERFACES	None	eni-6a925e8f	379645546579	ip-172-31-14-4.ec2.internal	172.31.14.4	True	in-use	subnet-1761da5e	vpc-7e474019
+ATTACHMENT	2017-04-12T00:09:46.000Z	eni-attach-005aed3b	True	0	attaching
+GROUPS	sg-65a9aa1f	default
+PRIVATEIPADDRESSES	True	ip-172-31-14-4.ec2.internal	172.31.14.4
+PLACEMENT	us-east-1a	None	default
+SECURITYGROUPS	sg-65a9aa1f	default
+STATE	0	pending
+STATEREASON	pending	pending
