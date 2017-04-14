@@ -7,10 +7,10 @@
 
 # default value
 SOURCE_DIR='/data/'
-NUM_CP=10
+NUM_CP=2
 DONE_CP=0
 VERBOSE=false    
-
+TEMP_DIR='./tempDir'
 # function of usage
 usage(){
     echo "Usage: afewmore [-hv] [-d dir] [-t dir] [-n num] instance-id"
@@ -72,8 +72,8 @@ check_num(){
 
 fetch_info(){
     msg "fetching information...."
-    local fetch=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output text --query 'Reservations[].Instances[].{Image_Id:ImageId, Key_Name:KeyName,Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
-    read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME GROUP_ID <<< $(echo $fetch)
+    local fetch=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output text --query 'Reservations[].Instances[].{Public_Dns_Name:PublicDnsName,Image_Id:ImageId, Key_Name:KeyName,Public_Dns_Name:PublicDnsName, Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
+    read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME PUBLIC_DNS_NAME GROUP_ID<<< $(echo $fetch)
     GROUP_ID=$(echo $GROUP_ID | awk '{print $2}')
     msg "Source instance info:"
     msg "Image_Id: $IMAGE_ID Key_Name: $KEY_NAME"
@@ -82,14 +82,55 @@ fetch_info(){
 }
 
 # create instance
-
-start_copy(){
+create_instance(){
     msg "create instance...."
-    local start_instance=$(aws ec2 run-instances --count 2 --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output text > test.txt)
-    echo $start_instance   
+    local start_instance=$(aws ec2 run-instances --count $NUM_CP --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output json>test.txt)
+    cat test.txt|grep InstanceId|awk '{print substr($2,2,19)}'
+    INSTANCE_ID_LIST=($(cat test.txt|grep InstanceId|awk '{print substr($2,2,19)}'))
+    local INDEX=0
+    PUBLIC_DNS_LIST=()
+    for id in "${INSTANCE_ID_LIST[@]}"
+     do
+        PUBLIC_DNS_LIST[$INDEX]=$(aws ec2 describe-instances --instance-ids $id --output text --query 'Reservations[].Instances[].{Public_Dns_Name:PublicDnsName}')
+        #echo ${PUBLIC_DNS_LIST[$INDEX]}
+        local INDEX=$INDEX+1
+    done
+}
+#copy the target directory
+#need to think about ubuntu, ec2-user, root
+download_target_dir(){
+    mkdir tempDir
+    scp -o StrictHostKeyChecking=no -i ~/Downloads/key.pem -r ubuntu@$PUBLIC_DNS_NAME:$SOURCE_DIR $TEMP_DIR>/dev/null
 
 }
-
+#get the target dir from the path
+get_dir_name(){
+    DIR_NAME=$(basename $SOURCE_DIR)
+}
+#wait until all new created instances initialized done
+wait_until_initialized(){
+    for id in "${INSTANCE_ID_LIST[@]}"
+        do
+            local count=$(aws ec2 describe-instance-status --instance-ids $id|grep '"Status": "ok",'|wc -l)
+            while [ $count -lt 2 ] 
+            do
+                count=$(aws ec2 describe-instance-status --instance-ids $id|grep '"Status": "ok",'|wc -l)
+                sleep 10
+            done
+        done
+}
+#up load the data to all new instances
+upload_target_dir(){
+    for DNS in "${PUBLIC_DNS_LIST[@]}"
+        do
+            #echo ubuntu@$DNS:~/  
+            scp -o StrictHostKeyChecking=no -i ~/Downloads/key.pem -r $TEMP_DIR/$DIR_NAME ubuntu@$DNS:~/>/dev/null
+        done
+}
+#remove the  temporary directory
+rm_temp_dir(){
+    rm -rf $TEMP_DIR
+}
 # check staus 
 
 check_status(){
@@ -114,8 +155,13 @@ while true; do
                 INSTANCE_ID=$1
                 check_instance
                 fetch_info
-                start_copy
-                check_status $INSTANCE_ID
+                create_instance
+                download_target_dir
+                get_dir_name 
+                wait_until_initialized
+                upload_target_dir
+                rm_temp_dir
+                check_status $INSTANCE_ID                
                 exit 0       
             fi ;;
     esac
