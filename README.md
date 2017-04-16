@@ -1,11 +1,15 @@
 # EC2-Tooling
 ## Goal
-Implement the afewmore command as specified in this manual page.
-Your program will behave exactly as outlined in that manual page, with no additional output or functionality.
+Implement the afewmore command as specified according to the [manual page](https://github.com/ltp19930730/EC2-Tooling/blob/master/manual.txt) .
+This script will behave exactly as outlined in that manual page, with no additional output or functionality.
 
 ## Target platform:
 
-The tool you write will be executed (and graded) on an Ubuntu instance ami-6de0dd04 with the `awscli` package installed via `sudo apt-get install awscli`. If your tool does not work in this environment, you will not get any points. See also: general homework guidelines.
+The tool can executed on an Ubuntu instance ami-6de0dd04(or other platform) with the `awscli` package installed via `sudo apt-get install awscli`. This script also based on the configuration of your ssh file which is under `~/.ssh/config`, make sure you have the right configuration like this :
+```
+Host *amazonaws.com
+  IdentityFile ~/.ssh/{ your_key.pem }
+```
 
 ## Team:
 Tianpei Luo && Chenhao Wang
