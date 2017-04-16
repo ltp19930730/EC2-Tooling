@@ -112,7 +112,9 @@ fetch_user(){
 create_instance(){
     msg "create instance...."
     local start_instance=$(aws ec2 run-instances --count $NUM_CP --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output json > test.txt)
-    #cat test.txt | grep InstanceId | awk '{print substr($2,2,19)}'   
+    if [ "$?" != "0" ];then
+        fatal "Can' create more instance"
+    fi
     INSTANCE_ID_LIST=($(cat test.txt | grep InstanceId | awk '{print substr($2, 2, 19)}'))
     local index=0
     PUBLIC_DNS_LIST=()
@@ -127,22 +129,18 @@ create_instance(){
 # wait until all new created instances initialized done
 
 wait_for_initialized(){
-
     msg "waiting for initialization.."
-    dots &
-    BG_PID=$!
-    trap "kill -9 $BG_PID" INT
+    msg "Processing "
     for id in "${INSTANCE_ID_LIST[@]}"
         do
             local count=0
             while [ $count -lt 2 ]
             do
                 count=$(aws ec2 describe-instance-status --instance-ids $id | grep '"Status": "ok",' | wc -l)
+                echo -n "."
                 sleep 10
             done
         done
-    kill $BG_PID
-    echo
     msg "all instance initialized." 
 }
 
@@ -153,22 +151,17 @@ start_trans(){
     msg "start transfer the data to target instance"
     for DNS in "${PUBLIC_DNS_LIST[@]}"
         do
-            ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "tar -czf - $SOURCE_DIR" | ssh -o "StrictHostKeyChecking no" $USER@$DNS "tar -xzf - " >/dev/null 2>&1
-            msg "Succuss upload file to $USER@$DNS"
+            local trans=$(ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "tar -czf - $SOURCE_DIR"\
+             | ssh -o "StrictHostKeyChecking no" $USER@$DNS "tar -xzf - " >/dev/null 2>&1)
+            if [ "$?" == "0" ];then
+                 msg "Succuss upload file to $USER@$DNS"
+            else
+                 msg "Failed to upload file to $USER@$DNS"
+            fi 
         done
     msg "Task finished"
 }
 
-# print a dot every 5 seconds by default
-dots(){
-seconds=${1:-5}
-msg "Processing"
-while true
-do
-    sleep $seconds
-    echo -n '.'
-done
-}
 
 # main 
 main(){
@@ -191,7 +184,6 @@ while true; do
 	    -h) help; exit 0 ;; 
 	    -v) VERBOSE=true; shift ;;
         -d) shift; SOURCE_DIR=$1 ; shift ;;
-        -t) shift; TARGET_DIR=$1 ; shift ;;
         -n) shift; NUM_CP=$1 ;check_num ; shift ;;
         -*) fatal "Invalid arguments : $1" ;;
         *) 
