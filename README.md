@@ -12,20 +12,20 @@ Tianpei Luo && Chenhao Wang
 
 ## Basic idea:
 ### v1.0
-Verfication:
-Valid and exist instance id
-Valid number
-Valid and exist directory
+Verfication:  
+Valid and exist instance id  
+Valid number  
+Valid and exist directory  
 
-fetching info:
-fetch username
-fetch information of the instance
+fetching info:  
+fetch username  
+fetch information of the instance  
 
-Create instance->
-Get the instance id and DNS->
-Wait for initializaion->
-Using `ssh hostA "tar -czf - dir" | ssh hostB "tar -xzf -"` to upload the source file->
-Done
+Create instance->  
+Get the instance id and DNS->  
+Wait for initializaion->  
+Using `ssh hostA "tar -czf - dir" | ssh hostB "tar -xzf -"` to upload the source file->  
+Done  
 
 ## UNIX utility
 `tar -cf - -C srcdir . | tar -xpf - -C destdir`
