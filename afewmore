@@ -6,25 +6,27 @@
 #########################
 
 # default value
-SOURCE_DIR='/data/'
+SOURCE_DIR='data'
+SOURCE_DNS=''
 NUM_CP=10
 DONE_CP=0
-VERBOSE=false    
+VERBOSE=false
+
 
 # function of usage
 usage(){
-    echo "Usage: afewmore [-hv] [-d dir] [-t dir] [-n num] instance-id"
+    echo "Usage: afewmore [-hv] [-d dir] [-n num] instance-id"
 }
 
 # if using the option -v print the message
 msg(){
     if $VERBOSE;then
-         echo $@
+         echo "[Info]: $@"
     fi 
 }
 
 fatal(){
-    echo $@ >&2
+    echo "[Error]: $@" >&2
     usage 
     exit 1
 }
@@ -34,7 +36,6 @@ help(){
 echo "     -d dir   Copy the contents of this data directory from the orignal source
 	      instance to all the new instances.  If not specified, defaults
 	      to /data.
-     -t  dir  specify the target dir
 
      -h       Print a usage statement and exit.
 
@@ -43,7 +44,7 @@ echo "     -d dir   Copy the contents of this data directory from the orignal so
 
      -v       Be verbose."
 }
-
+###################################################
 # function to check the instance is valid or not
 check_instance(){
 
@@ -61,44 +62,130 @@ check_instance(){
 
 # function to check the number is valid
 check_num(){
-    local re='^[1-9][0-9]+$'
+    local re='^[1-9][0-9]*$'
     if ! [[ $NUM_CP =~ $re ]] ; then
         fatal "Error not a valid number"
     fi
 }
 
+# (DO IT AFTER FETCH INFO)function to check the directory is exist
+check_dir(){
+    msg "check the directory is exist..."
+    local query=$(ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "if ! [[ -d $SOURCE_DIR ]]; then echo N;fi")
+    if [[ $query == 'N' ]];then
+        fatal "Directory is not exist!"
+    else 
+        msg "/$SOURCE_DIR exist"
+    fi      
+}
 
+
+
+##########################################
 #fetch information using the instance id
 
 fetch_info(){
     msg "fetching information...."
-    local fetch=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output text --query 'Reservations[].Instances[].{Image_Id:ImageId, Key_Name:KeyName,Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
-    read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME GROUP_ID <<< $(echo $fetch)
+    local fetch=`aws ec2 describe-instances --instance-ids $INSTANCE_ID --output text --query 'Reservations[].Instances[].{Image_Id:ImageId,DNS:PublicDnsName,Key_Name:KeyName,Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
+    read AVA_ZONE SOURCE_DNS IMAGE_ID INSTANCE_TYPE KEY_NAME GROUP_ID <<< $(echo $fetch)
     GROUP_ID=$(echo $GROUP_ID | awk '{print $2}')
     msg "Source instance info:"
-    msg "Image_Id: $IMAGE_ID Key_Name: $KEY_NAME"
+    msg "Image_Id: $IMAGE_ID Key_Name: $KEY_NAME DNS_Name: $SOURCE_DNS"
     msg "Instance_Type: $INSTANCE_TYPE AvailabilityZone: $AVA_ZONE SecurityGropus: $GROUP_ID"
-
 }
+
+# get the correct username
+fetch_user(){
+    msg "fetching username...."
+    local dns=$SOURCE_DNS
+    for user in ubuntu ec2-user centos fedora admin root
+    do
+        if timeout 5 ssh $user@$dns true >/dev/null 2>&1;then
+            msg "username : $user";break
+            USER=$user
+        fi
+    done
+}
+
 
 # create instance
-
-start_copy(){
+create_instance(){
     msg "create instance...."
-    local start_instance=$(aws ec2 run-instances --count 2 --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output text > test.txt)
-    echo $start_instance   
-
+    local start_instance=$(aws ec2 run-instances --count $NUM_CP --image-id $IMAGE_ID --key-name $KEY_NAME --instance-type $INSTANCE_TYPE --placement AvailabilityZone="$AVA_ZONE" --security-group-ids $GROUP_ID --output json > test.txt)
+    #cat test.txt | grep InstanceId | awk '{print substr($2,2,19)}'   
+    INSTANCE_ID_LIST=($(cat test.txt | grep InstanceId | awk '{print substr($2, 2, 19)}'))
+    local index=0
+    PUBLIC_DNS_LIST=()
+    for id in "${INSTANCE_ID_LIST[@]}"
+    do
+        PUBLIC_DNS_LIST[$index]=$(aws ec2 describe-instances --instance-ids $id --output text --query 'Reservations[].Instances[].{Public_Dns_Name:PublicDnsName}')
+        msg "target instance: <Instance_id : $id> @${PUBLIC_DNS_LIST[$index]}"
+        local index=$index+1
+    done
 }
 
-# check staus 
+# wait until all new created instances initialized done
 
-check_status(){
-    msg "checking status of instance: $@..."
-    local res=$(aws ec2 describe-instance-status --instance-ids $@ --output text | awk ' $3~/passed/ {print}'| wc -l)
-    msg "check: $res/2"
+wait_for_initialized(){
+
+    msg "waiting for initialization.."
+    dots &
+    BG_PID=$!
+    trap "kill -9 $BG_PID" INT
+    for id in "${INSTANCE_ID_LIST[@]}"
+        do
+            local count=0
+            while [ $count -lt 2 ]
+            do
+                count=$(aws ec2 describe-instance-status --instance-ids $id | grep '"Status": "ok",' | wc -l)
+                sleep 10
+            done
+        done
+    kill $BG_PID
+    echo
+    msg "all instance initialized." 
+}
+
+
+
+# transport function
+start_trans(){
+    msg "start transfer the data to target instance"
+    for DNS in "${PUBLIC_DNS_LIST[@]}"
+        do
+            ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "tar -czf - $SOURCE_DIR" | ssh -o "StrictHostKeyChecking no" $USER@$DNS "tar -xzf - " >/dev/null 2>&1
+            msg "Succuss upload file to $USER@$DNS"
+        done
+    msg "Task finished"
+}
+
+# print a dot every 5 seconds by default
+dots(){
+seconds=${1:-5}
+msg "Processing"
+while true
+do
+    sleep $seconds
+    echo -n '.'
+done
 }
 
 # main 
+main(){
+# check and verify
+    check_instance
+    check_num
+# fetch information
+    fetch_info
+    fetch_user
+# after fetch the info, verify existence of user input directory
+    check_dir
+
+# create instance-> wait for init -> copy file
+    create_instance
+    wait_for_initialized
+    start_trans
+}
 while true; do
 	case $1 in
 	    -h) help; exit 0 ;; 
@@ -112,10 +199,7 @@ while true; do
                 fatal "Please specify the instance id"
             else
                 INSTANCE_ID=$1
-                check_instance
-                fetch_info
-                start_copy
-                check_status $INSTANCE_ID
+                main
                 exit 0       
             fi ;;
     esac
