@@ -1,0 +1,20 @@
+ #!/usr/bin/env bash
+    #SOURCE_DIR='/data/'
+    #fetch=`aws ec2 describe-instances --instance-ids i-0d8172a798bc3721a --output text --query 'Reservations[].Instances[].{Public_Dns_Name:PublicDnsName,Image_Id:ImageId, Key_Name:KeyName,Group_Id:SecurityGroups[].GroupId, Instance_Type:InstanceType, AvailabilityZone:Placement.AvailabilityZone}'`
+    #echo $fetch
+    #read AVA_ZONE IMAGE_ID INSTANCE_TYPE KEY_NAME PUBLIC_DNS_NAME GROUP_ID <<< $(echo $fetch)
+    #GROUP_ID=$(echo $GROUP_ID | awk '{print $2}')
+    #echo "$PUBLIC_DNS_NAME"
+    #echo "Source instance info:"
+    #echo "Image_Id: $IMAGE_ID Key_Name: $KEY_NAME"
+    #echo "Instance_Type: $INSTANCE_TYPE AvailabilityZone: $AVA_ZONE SecurityGropus: $GROUP_ID"
+    #echo $KEY_NAME.pem
+    #echo ubuntu@$PUBLIC_DNS_NAME   
+    #mkdir tempDir
+    #scp -i ~/Downloads/key.pem -r ubuntu@$PUBLIC_DNS_NAME:$SOURCE_DIR ./tempDir
+    array=($(cat test.txt|grep InstanceId|awk '{print substr($2,2,19)}'))
+    for i in "${array[@]}"
+    do
+     echo $i
+    done
+

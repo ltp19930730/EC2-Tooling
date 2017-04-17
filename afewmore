@@ -60,6 +60,14 @@ check_instance(){
     fi
 }
 
+# function to check the number is valid
+check_num(){
+    local re='^[1-9][0-9]*$'
+    if ! [[ $NUM_CP =~ $re ]] ; then
+        fatal "Error not a valid number"
+    fi
+}
+
 # (DO IT AFTER FETCH INFO)function to check the directory is exist
 check_dir(){
     msg "check the directory is exist..."
@@ -71,15 +79,9 @@ check_dir(){
     fi      
 }
 
-# function to check the number is valid
-check_num(){
-    local re='^[1-9][0-9]*$'
-    if ! [[ $NUM_CP =~ $re ]] ; then
-        fatal "Error not a valid number"
-    fi
-}
 
-
+##########################################
+#fetch information using the instance id
 
 # create instance
 create_instance(){
@@ -98,9 +100,6 @@ create_instance(){
         local index=$index+1
     done
 }
-
-##########################################
-#fetch information using the instance id
 
 fetch_info(){
     msg "fetching information...."
@@ -126,22 +125,6 @@ fetch_user(){
 }
 
 
-# transport function
-start_trans(){
-    msg "start transfer the data to target instance"
-    for DNS in "${PUBLIC_DNS_LIST[@]}"
-        do
-            local trans=$(ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "tar -czf - $SOURCE_DIR"\
-             | ssh -o "StrictHostKeyChecking no" $USER@$DNS "tar -xzf - " >/dev/null 2>&1)
-            if [ "$?" == "0" ];then
-                 msg "Succuss upload file to $USER@$DNS"
-            else
-                 msg "Failed to upload file to $USER@$DNS"
-            fi 
-        done
-    msg "Task finished"
-}
-
 # wait until all new created instances initialized done
 
 wait_for_initialized(){
@@ -161,6 +144,21 @@ wait_for_initialized(){
 }
 
 
+# transport function
+start_trans(){
+    msg "start transfer the data to target instance"
+    for DNS in "${PUBLIC_DNS_LIST[@]}"
+        do
+            local trans=$(ssh -o "StrictHostKeyChecking no" $USER@$SOURCE_DNS "tar -czf - $SOURCE_DIR"\
+             | ssh -o "StrictHostKeyChecking no" $USER@$DNS "tar -xzf - " >/dev/null 2>&1)
+            if [ "$?" == "0" ];then
+                 msg "Succuss upload file to $USER@$DNS"
+            else
+                 msg "Failed to upload file to $USER@$DNS"
+            fi 
+        done
+    msg "Task finished"
+}
 
 
 
