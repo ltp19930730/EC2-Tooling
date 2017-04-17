@@ -42,25 +42,29 @@ After all new instances initialized we can start transfer information.
         ssh and tar command again to unzip and upload  
 
 ##  Problem and Overcome
-1.Problem: We can't make sure what kind of user since there is no such argument in this tool.  
+<ol>
+<li>Problem: We can't make sure what kind of user since there is no such argument in this tool.  
 Overcome: We use `ssh user@dns` to ping all kind of users(ubuntu,ec2-user,centos,etc).If it's timeout,try next one.  
-2.Problem: We can't make sure how long we should wait before we starting upload data to new instances since  
+<li>Problem: We can't make sure how long we should wait before we starting upload data to new instances since  
 we can't upload before it's initialized.  
 Overcome: We use `aws ec2 describe-instance-status --instance-ids $id | grep '"Status": "ok",' | wc -l` command to   
 check if it's initialized.  
-3.Problem: There is no the dns of new instance in the output of `aws ec2 run-instances`.  
+<li>Problem: There is no the dns of new instance in the output of `aws ec2 run-instances`.  
 Overcome: Use the instances' id and command `aws ec2 describe-instances` to grab all new instances' dns.  
-4.Problem: Can't make sure the string after -n is a number.  
+<li>Problem: Can't make sure the string after -n is a number.  
 Overcome: Use a regular expression to check it.  
-5.Problem: There will be a yes/no question when using scp or ssh command.  
+<li>Problem: There will be a yes/no question when using scp or ssh command.  
 Overcome: By adding an argument `-o "StrictHostKeyChecking no"` into the command.
+</ol>
 ##  Tests
-1. Test the tool on all platforms(ubuntu,ec2-user,entos,fedora,admin,root).   
-2. Test the case that target directory doesn't exist.  
-3. Test the string after -n is not number.  
-4. Test the time when in bad network or no network.  
-5. Test the case that target instance doesn't exist.  
-6. Test the case handle can't create so many instances.
+<ol>
+	<li>Test the tool on all platforms(ubuntu,ec2-user,entos,fedora,admin,root).  </li>  
+	<li>Test the case that target directory doesn't exist.  </li>  
+	<li>Test the string after -n is not number.  </li>  
+	<li>Test the time when in bad network or no network.  </li>  
+	<li>Test the case that target instance doesn't exist.  </li>  
+	<li>Test the case handle can't create so many instances.</li>  
+</ol>
 ##  Trick:
 	`ssh hostA "tar -czf - dir" | ssh hostB "tar -xzf -"`
 
