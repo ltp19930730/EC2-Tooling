@@ -145,7 +145,7 @@ start_trans(){
 # wait until all new created instances initialized done
 
 wait_for_initialized(){
-    msg "waiting for initialization.."
+    msg "waiting for initialization..."
     msg "Processing "
     for id in "${INSTANCE_ID_LIST[@]}"
         do
