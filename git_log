@@ -1,0 +1,175 @@
+commit eca557f05d4b43ae26a3623a67d9dd2c7eba4ab4
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Mon Apr 17 00:40:57 2017 -0400
+
+    readme
+
+commit 8096616332097bc63a826042dd0b0f3de29ab47c
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Mon Apr 17 00:35:25 2017 -0400
+
+    readme
+
+commit 3049f0e6c796fe1b9a430b9f85c487ee50bd8d3b
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Mon Apr 17 00:28:32 2017 -0400
+
+    readme
+
+commit c7a3055ad60da5860f28fa5aa3b216b7dbb514c2
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Mon Apr 17 00:26:39 2017 -0400
+
+    readme
+
+commit 60f8e04839af87f524a955330aa002e6d1b6d651
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Mon Apr 17 00:20:17 2017 -0400
+
+    rewrite the readme
+
+commit 56a9533c868e2c8b469446709e22c69a753fed59
+Author: Michael-wang <michael-wang@host-155-246-171-16.dhcp.stevens-tech.edu>
+Date:   Sun Apr 16 23:03:14 2017 -0400
+
+    change it back
+
+commit ef8af5ab9adcfd43a1a71fa69afbaafea73991b3
+Author: Michael-wang <michael-wang@new-host.home>
+Date:   Sun Apr 16 21:42:57 2017 -0400
+
+    make some change
+
+commit bf13ea78e247a58496a389227e165be315d0f8ec
+Author: Michael-wang <michael-wang@new-host.home>
+Date:   Sun Apr 16 21:36:16 2017 -0400
+
+    add some function
+
+commit 32a9353c748737fe1b47e1021aea75a604da72c4
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sun Apr 16 17:37:44 2017 -0400
+
+    Update README.md
+
+commit 687e3bd6bb9ea1893669895c573de4f6277bdc1c
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sun Apr 16 17:28:58 2017 -0400
+
+    Update README.md
+
+commit ac30fcd0393c383a99a9597cd07a6ed006e0743c
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sun Apr 16 17:27:22 2017 -0400
+
+    Update the readme
+
+commit 413d99b96c19fb0163efc79009a1721aced65a41
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sun Apr 16 17:26:47 2017 -0400
+
+    Update README.md
+
+commit 8b1ef7f20508df269887978b6225efc8fc0aa385
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:42:08 2017 -0400
+
+    delete test.txt
+
+commit dc6501a3d9976225a83f64ea8fdc5049c4c4c293
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:40:35 2017 -0400
+
+    add manual
+
+commit e0a44fdcd279f725c03b45f9ef67eb2b849d7a0d
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:37:05 2017 -0400
+
+    Update README.md
+
+commit a770f2408f1ea0bd1d35cd0899dc9c441f3feaf7
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:28:06 2017 -0400
+
+    fix some bug
+
+commit fd2a3c98a9f2a66fa9d2d493335bb976f839f47e
+Merge: 92f0f4a 7a6c083
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:03:30 2017 -0400
+
+    Merge branch 'master' of github.com:ltp19930730/EC2-Tooling
+
+commit 92f0f4a983c07e3a67dcbb62b2787d3fac2bf182
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Sun Apr 16 16:03:13 2017 -0400
+
+    version1.0
+
+commit 7a6c083f14aeca77c9315572598f062688c077b8
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Sat Apr 15 19:04:41 2017 -0400
+
+    Set theme jekyll-theme-cayman
+
+commit 4c13fff13d89ad910d593b7a0b74940c43b363a2
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Tue Apr 11 20:13:34 2017 -0400
+
+    test
+
+commit 4871ef4206c7709a7648f0aee83a4fff422d287c
+Merge: 6757ee7 3475721
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Tue Apr 11 17:16:19 2017 -0400
+
+    Merge branch 'master' of github.com:ltp19930730/EC2-Tooling
+
+commit 6757ee7a3523d57706b7442de24c1ebf5db87d5b
+Author: TeslaZ <tluo4@stevens.edu>
+Date:   Tue Apr 11 17:16:10 2017 -0400
+
+    upload
+
+commit 3475721318f50c28e37bbfb7bdfd2341dd7cfc26
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Wed Apr 5 18:11:57 2017 -0400
+
+    Update README.md
+
+commit dd4170cd56ceb74eb493715fc69f298f82e8e413
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Mon Apr 3 17:13:45 2017 -0400
+
+    Update README.md
+
+commit 876d9b98eb9de930f840434f2fc808df4764ab54
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Mon Apr 3 17:09:35 2017 -0400
+
+    Update README.md
+
+commit f495c9aa63f9dad798503eb272a9c472f31c407d
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Mon Apr 3 17:08:57 2017 -0400
+
+    Update README.md
+
+commit e7cff4d8580cfeeb948cf3a9d600fd95c1a6c7a4
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Mon Apr 3 16:51:31 2017 -0400
+
+    Update README.md
+
+commit b4c1d700069cd4001df4dbba02e2633e4564d388
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Fri Mar 31 23:47:36 2017 -0400
+
+    Update README.md
+
+commit ba1a2b1e3388a1641d9d0dd31ebe5afec3b090e3
+Author: Tianpei Luo <tluo4@stevens.edu>
+Date:   Fri Mar 31 23:44:58 2017 -0400
+
+    Initial commit

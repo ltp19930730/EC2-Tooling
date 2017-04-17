@@ -50,7 +50,7 @@ Overcome: We use `aws ec2 describe-instance-status --instance-ids $id | grep '"S
 check if it's initialized.  
 3.Problem: There is no the dns of new instance in the output of `aws ec2 run-instances`.  
 Overcome: Use the instances' id and command `aws ec2 describe-instances` to grab all new instances' dns.  
-4.Problem: Can't make use the string after -n is a number.  
+4.Problem: Can't make sure the string after -n is a number.  
 Overcome: Use a regular expression to check it.  
 5.Problem: There will be a yes/no question when using scp or ssh command.  
 Overcome: By adding an argument `-o "StrictHostKeyChecking no"` into the command.
